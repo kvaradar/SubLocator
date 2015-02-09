@@ -29,6 +29,7 @@ GEM
     minitest (5.5.1)
     moneta (0.7.20)
     mysql2 (0.3.17)
+    net-ssh (2.9.2)
     padrino (0.12.4)
       padrino-admin (= 0.12.4)
       padrino-cache (= 0.12.4)
@@ -90,5 +91,6 @@ DEPENDENCIES
   activerecord (>= 3.1)
   erubis (~> 2.7.0)
   mysql2
+  net-ssh
   padrino (= 0.12.4)
   rake
