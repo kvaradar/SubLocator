@@ -54,7 +54,7 @@ end
   end
 
 
-  post '/need_a_sub' do
+  post '/generate_sub_profile' do
 
     req = JSON.parse(request.body.read,:symbolize_names=>true)
     n = Name.find_by_email_id(req[:email_id])
@@ -64,7 +64,8 @@ end
     if n.need_a_sub.nil?
 
       n.need_a_sub = NeedASub.new
-      puts "sub details are #{n}"
+    #  puts "sub details are #{n.to_json}"
+      n.to_json
     else
 
        all_subs = NeedASub.all
@@ -73,6 +74,7 @@ end
        sub_array = []
        all_subs.each do |name|
          puts "People who want to sub are"
+         puts (Name.find_by_id(name.name_id)).to_json
          sub_array<< (Name.find_by_id(name.name_id)).to_json
        end
 
@@ -82,9 +84,52 @@ end
 
   end
 
+  post '/generate_wannabe_profile'  do
+    req = JSON.parse(request.body.read,:symbolize_names=>true)
+    w = Name.find_by_email_id(req[:email_id])
+    w.want_to_sub = WantToSub.find_by_name_id(w.id)
+    if w.want_to_sub.nil?
+      w.want_to_sub = WantToSub.new
+     # puts "want to sub are #{w.to_json}"
+      w.to_json
+    else
+      want_subs = WantToSub.all
+      want_array = []
+      want_subs.each do |want|
+        puts "people who want to sub are "
+        puts (Name.find_by_id(want.name_id)).to_json
+        want_array<<(Name.find_by_id(want.name_id)).to_json
 
+      end
 
+      want_array
+    end
 
+  end
+
+  post '/need_a_sub' do
+     date = set_current_date()
+     puts "date is #{date}"
+    if WantToSub.where("slot >?",date).blank?
+      return "Nobody wants to sub for you"
+    else
+      want_to_sub
+    end
+  end
+
+ post '/generate_needy_request' do
+   # request has to entail date,email
+   req = JSON.parse(request.body.read,:symbolize_names=>true)
+   n = Name.find_by_email_id(req[:email_id])
+   n.need_a_sub = NeedASub.new(:slot => req[:slot])
+   puts "needs a sub is #{n.need_a_sub}"
+    n.need_a_sub.to_json
+
+ end
+
+  post '/want_to_sub'do
+
+  end
 
 
 def get_all_names
