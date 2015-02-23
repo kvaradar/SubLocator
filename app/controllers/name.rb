@@ -54,17 +54,29 @@ end
   end
 
 
-  post '/need_a_sub/:email_id' do
-    n = Name.find(email_id)
-    if n.need_a_sub.nil == true
+  post '/need_a_sub' do
+
+    req = JSON.parse(request.body.read,:symbolize_names=>true)
+    n = Name.find_by_email_id(req[:email_id])
+    n.need_a_sub = NeedASub.find_by_name_id(n.id)
+    puts "needs a sub is #{n.need_a_sub}"
+
+    if n.need_a_sub.nil?
+
       n.need_a_sub = NeedASub.new
       puts "sub details are #{n}"
     else
-       all_subs = NeedASub.all # change this to want to sub
+
+       all_subs = NeedASub.all
+       # change this to want to sub
+       puts "all_subs is #{all_subs}"
+       sub_array = []
        all_subs.each do |name|
          puts "People who want to sub are"
-         puts (Name.find_by_id(name.name_id)).to_json
+         sub_array<< (Name.find_by_id(name.name_id)).to_json
        end
+
+      sub_array
 
     end
 

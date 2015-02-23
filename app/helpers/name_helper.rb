@@ -4,29 +4,36 @@ module SubLocator
   class App
     module NameHelper
      def verify_email(email)
+       flag = false
        record = Name.all
        hashed=record.to_json
-       parsed = JSON.parse(hashed)
+       parsed = JSON.parse(hashed,:symbolize_names=>true)
+       puts "parsed is #{parsed}"
        parsed.each do |name|
-         puts "names are #{name["first_name"]}"
-         if email.downcase == name["first_name"].downcase
-           return true
-         else
-           return false
-
-         end
-
+         puts "name is #{name}"
+         puts "names are #{name[:name]}"
+         if email.downcase == name[:name].downcase
+           flag = true
        end
+       end
+
+       if flag == true
+         return true
+       else
+         return false
+       end
+
+
+
+
      end
-
-
-
-
     end
 
     helpers NameHelper
+
   end
-end
+
+  end
 
 
 
