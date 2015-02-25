@@ -121,14 +121,37 @@ end
    # request has to entail date,email
    req = JSON.parse(request.body.read,:symbolize_names=>true)
    n = Name.find_by_email_id(req[:email_id])
-   n.need_a_sub = NeedASub.new(:slot => req[:slot])
+   n.need_a_sub = NeedASub.new(:slot => req[:slot],:name_id=>n.id)
    puts "needs a sub is #{n.need_a_sub}"
     n.need_a_sub.to_json
 
  end
 
-  post '/want_to_sub'do
+  post '/want_to_sub' do
+    # Gets a list of all the people who need subs
+     needy_people = NeedASub.all
+     date = needy_people.where("slot >?",set_current_date())
+    if date.nil?
+      return "It's a Christmas Miracle! Nobody needs a sub!"
+    end
+    parsed = JSON.parse(date.to_json,:symbolize_names=>true)
+    #puts "parsed is #{parsed}"
+     needy_list = []
+    parsed.each do |name|
+      n = Name.find_by_id(name[:name_id])
+      needy_list << n.to_json
+    end
+   # puts "needy list is #{needy_list}"
+    needy_list
+  end
 
+  post '/want_to_sub_specifically'do
+    # request body has email id and slot details
+    req = JSON.parse(request.body.read,:symbolize_names=>true)
+    n = Name.find_by_email_id(req[:email_id])
+    n.want_to_sub = WantToSub.new(:slot => req[:slot],:name_id =>n.id)
+    puts "wants to sub is #{n.need_a_sub}"
+    n.need_a_sub.to_json
   end
 
 
