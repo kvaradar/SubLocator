@@ -121,7 +121,17 @@ end
    # request has to entail date,email
    req = JSON.parse(request.body.read,:symbolize_names=>true)
    n = Name.find_by_email_id(req[:email_id])
-   n.need_a_sub = NeedASub.new(:slot => req[:slot],:name_id=>n.id)
+   # validate that same slot does not exist again
+   find_slot = NeedASub.where("slot >?",set_current_date())
+   puts "find slot is #{find_slot}"
+   find_slot.each do |slot|
+     puts "slot request is #{Date.parse(slot.slot.to_s)}"
+     puts "req is #{req[:slot]}"
+     if Date.parse(slot.slot.to_s)== Date.parse(req[:slot].to_s)
+      return "You're already subbing for slot #{Date.parse(slot.slot.to_s)}. Stop being over-helpful"
+     end
+   end
+   n.need_a_sub += [NeedASub.new(:slot => req[:slot])]
    puts "needs a sub is #{n.need_a_sub}"
     n.need_a_sub.to_json
 
@@ -149,7 +159,7 @@ end
     # request body has email id and slot details
     req = JSON.parse(request.body.read,:symbolize_names=>true)
     n = Name.find_by_email_id(req[:email_id])
-    n.want_to_sub = WantToSub.new(:slot => req[:slot],:name_id =>n.id)
+    n.want_to_sub += [WantToSub.new(:slot => req[:slot])]
     puts "wants to sub is #{n.need_a_sub}"
     n.need_a_sub.to_json
   end
