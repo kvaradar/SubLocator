@@ -122,13 +122,13 @@ end
    req = JSON.parse(request.body.read,:symbolize_names=>true)
    n = Name.find_by_email_id(req[:email_id])
    # validate that same slot does not exist again
-   find_slot = NeedASub.where("slot >?",set_current_date())
+   find_slot = NeedASub.where(["slot >:slot and name_id = :name_id",{:slot=>"#{set_current_date()}",:name_id=>"#{n.id}"}])
    puts "find slot is #{find_slot}"
    find_slot.each do |slot|
      puts "slot request is #{Date.parse(slot.slot.to_s)}"
      puts "req is #{req[:slot]}"
      if Date.parse(slot.slot.to_s)== Date.parse(req[:slot].to_s)
-      return "You're already subbing for slot #{Date.parse(slot.slot.to_s)}. Stop being over-helpful"
+      return "You've already requested a sub for slot #{Date.parse(slot.slot.to_s)}. Stop being so needy"
      end
    end
    n.need_a_sub += [NeedASub.new(:slot => req[:slot])]
@@ -144,24 +144,25 @@ end
     if date.nil?
       return "It's a Christmas Miracle! Nobody needs a sub!"
     end
-    parsed = JSON.parse(date.to_json,:symbolize_names=>true)
-    #puts "parsed is #{parsed}"
-     needy_list = []
-    parsed.each do |name|
-      n = Name.find_by_id(name[:name_id])
-      needy_list << n.to_json
-    end
-   # puts "needy list is #{needy_list}"
-    needy_list
+    need_a_sub
   end
 
-  post '/want_to_sub_specifically'do
+  post '/generate_wanty_request'do
     # request body has email id and slot details
     req = JSON.parse(request.body.read,:symbolize_names=>true)
     n = Name.find_by_email_id(req[:email_id])
+    find_slot = WantToSub.where(["slot >:slot and name_id = :name_id",{:slot=>"#{set_current_date()}",:name_id=>"#{n.id}"}])
+    puts "find slot is #{find_slot}"
+    find_slot.each do |slot|
+      puts "slot request is #{Date.parse(slot.slot.to_s)}"
+      puts "req is #{req[:slot]}"
+      if Date.parse(slot.slot.to_s)== Date.parse(req[:slot].to_s)
+        return "You're already subbing for slot #{Date.parse(slot.slot.to_s)}. Stop being over-helpful"
+      end
+    end
     n.want_to_sub += [WantToSub.new(:slot => req[:slot])]
-    puts "wants to sub is #{n.need_a_sub}"
-    n.need_a_sub.to_json
+    puts "want to sub is #{n.want_to_sub}"
+    n.want_to_sub.to_json
   end
 
 

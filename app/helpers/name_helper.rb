@@ -34,24 +34,59 @@ module SubLocator
       end
 
       def want_to_sub
-        w = WantToSub.all
-        puts w.where("slot >?",set_current_date()).to_json
-        parsed = JSON.parse(w.where("slot >?",set_current_date()).to_json,:symbolize_names=>true)
+        slot = WantToSub.where("slot >?",set_current_date())
         name_list = []
-        parsed.each do |name|
-          puts "name is #{name}"
-          name_list << name[:name_id]
+        slotty_hash = Hash.new{|hsh,key|hsh[key]=[]}
+
+        slot.each do |find|
+          unless name_list.include? find.name_id
+            name_list << find.name_id
+          end
+          slotty_hash[find.name_id].push find.slot
         end
 
         puts "name list is #{name_list}"
-        want_to_sub = []
-        name_list.each do |id|
-          want_to_sub << Name.find_by_id(id)
+        puts "slotty hash is #{slotty_hash}"
+
+        complete_list = []
+
+        name_list.each do |name_id|
+          n = Name.find_by_id(name_id)
+          complete_list << n
+          complete_list << "slot"
+          complete_list << slotty_hash[name_id]
         end
-        puts "want to sub are #{want_to_sub}"
-         want_to_sub.to_json
+        puts "complete list is #{complete_list}"
+        complete_list.to_json
       end
 
+
+      def need_a_sub
+        slot = NeedASub.where("slot >?",set_current_date())
+        name_list = []
+        slotty_hash = Hash.new{|hsh,key|hsh[key]=[]}
+
+        slot.each do |find|
+          unless name_list.include? find.name_id
+            name_list << find.name_id
+          end
+          slotty_hash[find.name_id].push find.slot
+        end
+
+        puts "name list is #{name_list}"
+        puts "slotty hash is #{slotty_hash}"
+
+        complete_list = []
+
+        name_list.each do |name_id|
+          n = Name.find_by_id(name_id)
+          complete_list << n
+          complete_list << "slot"
+          complete_list << slotty_hash[name_id]
+        end
+        puts "complete list is #{complete_list}"
+        complete_list.to_json
+      end
 
     end
 
