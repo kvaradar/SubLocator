@@ -41,16 +41,26 @@ end
 
 
 
-  post '/email' do
-    params[:name]
-    flag = verify_email(params[:name])
+  get '/email' do
+    params[:email_id]
+    flag = verify_email(params[:email_id])
     if flag == true
-      status 201
+      status 200
+      return (Name.find_by_email_id(params[:email_id])).to_json
     else
+
       status 400
+      return "BOOHOO. Not reg'd as a MADSTER, sucker!"
     end
    # params.to_json
     #request.body.to_json
+  end
+
+
+  get '/sub_details'do
+
+    n = Name.find_by_email_id(params[:email_id])
+    return n.to_json
   end
 
 

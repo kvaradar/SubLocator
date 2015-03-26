@@ -6,3 +6,8 @@ vendor/gems/*
 .sass-cache/*
 db/*.db
 .*.sw*
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
