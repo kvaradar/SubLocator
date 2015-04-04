@@ -121,7 +121,8 @@ end
      date = set_current_date()
      puts "date is #{date}"
     if WantToSub.where("slot >?",date).blank?
-      return "Nobody wants to sub for you"
+   #   return "Nobody wants to sub for you"
+      return False
     else
       want_to_sub
     end
@@ -138,7 +139,8 @@ end
      puts "slot request is #{Date.parse(slot.slot.to_s)}"
      puts "req is #{req[:slot]}"
      if Date.parse(slot.slot.to_s)== Date.parse(req[:slot].to_s)
-      return "You've already requested a sub for slot #{Date.parse(slot.slot.to_s)}. Stop being so needy"
+   #   return "You've already requested a sub for slot #{Date.parse(slot.slot.to_s)}. Stop being so needy"
+       return False
      end
    end
    n.need_a_sub += [NeedASub.new(:slot => req[:slot])]
@@ -152,7 +154,8 @@ end
      needy_people = NeedASub.all
      date = needy_people.where("slot >?",set_current_date())
     if date.nil?
-      return "It's a Christmas Miracle! Nobody needs a sub!"
+    #  return "It's a Christmas Miracle! Nobody needs a sub!"
+      return False
     end
     need_a_sub
   end
@@ -167,7 +170,8 @@ end
       puts "slot request is #{Date.parse(slot.slot.to_s)}"
       puts "req is #{req[:slot]}"
       if Date.parse(slot.slot.to_s)== Date.parse(req[:slot].to_s)
-        return "You're already subbing for slot #{Date.parse(slot.slot.to_s)}. Stop being over-helpful"
+     #   return "You're already subbing for slot #{Date.parse(slot.slot.to_s)}. Stop being over-helpful"
+      return False
       end
     end
     n.want_to_sub += [WantToSub.new(:slot => req[:slot])]
